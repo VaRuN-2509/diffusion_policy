@@ -136,6 +136,7 @@ class RealEnv:
             video_recorder=video_recorder,
             verbose=False
             )
+        print(realsense.n_cameras, 'cameras found!')
         
         multi_cam_vis = None
         if enable_multi_cam_vis:
