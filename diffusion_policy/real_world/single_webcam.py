@@ -1,4 +1,5 @@
-from typing import Optional, Callable, Dict
+import pathlib
+from typing import List, Optional, Callable, Dict, Union
 import cv2
 import time
 import enum
@@ -181,6 +182,30 @@ class SingleWebcam(mp.Process):
     def set_brightness(self, brightness=None):
         if brightness is not None:
             self.set_property(cv2.CAP_PROP_BRIGHTNESS, brightness)
+            
+    def start_recording(self, video_path: str, start_time: float=-1):
+        assert self.enable_color
+
+        path_len = len(video_path.encode('utf-8'))
+        if path_len > self.MAX_PATH_LENGTH:
+            raise RuntimeError('video_path too long.')
+        self.command_queue.put({
+            'cmd': Command.START_RECORDING.value,
+            'video_path': video_path,
+            'recording_start_time': start_time
+        })
+        print("initiated recording for", video_path)
+        
+    def stop_recording(self):
+        self.command_queue.put({
+            'cmd': Command.STOP_RECORDING.value
+        })
+    
+    def restart_put(self, start_time):
+        for camera in self.cameras.values():
+            camera.restart_put(start_time)
+
+
 
     def run(self):
         # Limit threads
@@ -275,6 +300,7 @@ class SingleWebcam(mp.Process):
                         video_path = ''.join(command['video_path']).strip('\x00')
                         start_time = command['recording_start_time'] or None
                         self.video_recorder.start(video_path, start_time=start_time)
+                        print(f"[SingleWebcam {self.device_index}] Recording started at {video_path} with start time {start_time}")
                     elif cmd == Command.STOP_RECORDING.value:
                         self.video_recorder.stop()
                         put_idx = None
