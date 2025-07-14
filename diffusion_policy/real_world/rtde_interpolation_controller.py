@@ -54,6 +54,7 @@ class FrankaDataCollector(Node):
 
         # Data container
         self.example = dict()
+        self.ring_buffer = None
 
         # Start timer to periodically push data
         self.timer = self.create_timer(1/125, self.timer_callback)
@@ -273,11 +274,13 @@ class FrankaInterpolationController(mp.Process):
                 'TargetQ',
                 'TargetQd'
             ]
-        ring_buffer = FrankaDataCollector(shm_manager,self.frequency,self.get_max_k).get_ring_buffer()
+            
+
+        #ring_buffer = FrankaDataCollector(shm_manager,self.frequency,self.get_max_k).get_ring_buffer()
 
         self.ready_event = mp.Event()
         self.input_queue = input_queue
-        self.ring_buffer = ring_buffer
+        self.ring_buffer = None # will be initialized in run()
         self.receive_keys = receive_keys
     
     # ========= launch method ===========
@@ -357,6 +360,8 @@ class FrankaInterpolationController(mp.Process):
         rclpy.init()
 
         # Create ROS2 nodes
+        ring_buffer = FrankaDataCollector(self.shm_manager,self.frequency,self.get_max_k).get_ring_buffer()
+        self.ring_buffer = ring_buffer
         rtde_c = FrankaDataPublisher(self.frequency)
         rtde_r = FrankaDataCollector(self.shm_manager, self.get_max_k, self.frequency)
 
