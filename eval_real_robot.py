@@ -230,6 +230,7 @@ def main(input, output, robot_ip, match_dataset, match_episode,
                             perv_target_pose = this_target_pose
                             this_target_poses = np.expand_dims(this_target_pose, axis=0)
                         else:
+                            target_pose = obs['robot_eef_pose'][-1]
                             this_target_poses = np.zeros((len(action), len(target_pose)), dtype=np.float64)
                             this_target_poses[:] = target_pose
                             this_target_poses[:,[0,1]] = action
