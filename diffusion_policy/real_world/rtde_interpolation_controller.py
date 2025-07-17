@@ -206,15 +206,15 @@ class FrankaDataPublisher(Node):
             self.get_logger().warn("Invalid joint pose received. Skipping.")
             return
         current_time = time.time()
-        amplitude = np.array([0.1, 0.2, 0.1, 0.3, 0.1, 0.2, 0.1])
+        #amplitude = np.array([0.1, 0.2, 0.1, 0.3, 0.1, 0.2, 0.1])
 
-        frequency = np.array([0.2, 0.15, 0.25, 0.1, 0.2, 0.15, 0.1]) * 2 * np.pi
-        base_pose = np.array([0.0, -0.6, 0.0, -2.2, 0.0, 2.4, 0.9])
-        dynamic_offset = amplitude * np.sin(frequency * current_time)
-        joint_pose = base_pose + dynamic_offset
-        joint_pose = joint_pose.tolist()
+        #frequency = np.array([0.2, 0.15, 0.25, 0.1, 0.2, 0.15, 0.1]) * 2 * np.pi
+        #base_pose = np.array([0.0, -0.6, 0.0, -2.2, 0.0, 2.4, 0.9])
+        #dynamic_offset = amplitude * np.sin(frequency * current_time)
+        #joint_pose = base_pose + dynamic_offset
+        #joint_pose = joint_pose.tolist()
 
-        self.joint_init(joint_pose,self.max_vel, self.max_accl)
+        self.joint_init(pose,self.max_vel, self.max_accl)
         
         
 class FrankaInterpolationController(mp.Process):
